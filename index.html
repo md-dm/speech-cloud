@@ -3,6 +3,7 @@
 <body>
 <script>
   var fill = d3.scale.category20();
+  var fontSize = d3.scale.log().range([10, 100]);
   
   var data; // a global
 
@@ -13,11 +14,15 @@
   });
 
   function visualizeIt(){
+    console.log(fontSize);
     d3.layout.cloud().size([960, 600])
         .words(data[0].words )
         .rotate(function() { return 0; })
         .font("Impact")
-        .fontSize(function(d) { return d.size; })
+        .fontSize(function(d) { 
+          return fontSize(+d.size);  
+        })
+        .rotate(function(d) { return 0; })
         .on("end", draw)
         .start();
 
