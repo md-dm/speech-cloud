@@ -1,0 +1,45 @@
+<script src="lib/d3/d3.js"></script>
+<script src="lib/layoutcloud/d3.layout.cloud.js"></script>
+<body>
+<script>
+  var fill = d3.scale.category20();
+  
+  var data; // a global
+
+  d3.json("https://api.mongolab.com/api/1/databases/datafest/collections/cloud?q={%22sdate%22:%2220100111%22}&apiKey=4fdcdb51e4b075eac17ca533", function(json) {
+    data = json;
+    console.log(data);
+    visualizeIt();
+  });
+
+  function visualizeIt(){
+    d3.layout.cloud().size([600, 600])
+        .words(data[0].words )
+        .rotate(function() { return ~~(Math.random() * 2) * 90; })
+        .font("Impact")
+        .fontSize(function(d) { return d.size; })
+        .on("end", draw)
+        .start();
+
+  }
+
+
+  function draw(words) {
+    d3.select("body").append("svg")
+        .attr("width", 600)
+        .attr("height", 600)
+      .append("g")
+        .attr("transform", "translate(150,150)")
+      .selectAll("text")
+        .data(words)
+      .enter().append("text")
+        .style("font-size", function(d) { return (d.size)  + "px"; })
+        .style("font-family", "Impact")
+        .style("fill", function(d, i) { return fill(i); })
+        .attr("text-anchor", "middle")
+        .attr("transform", function(d) {
+          return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+        })
+        .text(function(d) { return d.text; });
+  }
+</script>
