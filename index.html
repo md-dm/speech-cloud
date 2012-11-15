@@ -1,72 +1,87 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Speech Cloud</title>
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css">
-    <script src="http://code.jquery.com/jquery-1.8.2.js"></script>
-    <script src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
-    <script src="lib/d3/d3.js"></script>
-    <script src="lib/layoutcloud/d3.layout.cloud.js"></script>
-</head>
-
-<body> 
+<script src="lib/d3/d3.js"></script>
+<script src="lib/layoutcloud/d3.layout.cloud.js"></script>
+<body>
+  <div id="vis"></div>
 <script>
   var fill = d3.scale.category20();
   var fontSize = d3.scale.log().range([10, 100]);
-  
-  var data; // a global
-
-  d3.json("https://api.mongolab.com/api/1/databases/datafest/collections/cloud?q={%22sdate%22:%2220100111%22}&apiKey=4fdcdb51e4b075eac17ca533", function(json) {
-    data = json;
-    console.log(data);
-    visualizeIt();
-  });
-
-  function visualizeIt(){
-
-    console.log(fontSize);
-    
-    d3.layout.cloud().size([960, 600])
-        .words(data[0].words )
+  var layout = d3.layout.cloud().size([960, 600])
         .rotate(function() { return 0; })
         .font("Impact")
         .fontSize(function(d) { 
           return fontSize(+d.size);  
         })
         .rotate(function(d) { return 0; })
-        .on("end", draw)
-        .start();
+        .on("end", draw);
+
+  var svg = d3.select("#vis").append("svg")
+    .attr("width", 960)
+    .attr("height", 600);
+
+  var background = svg.append("g"),
+    vis = svg.append("g")
+    .attr("transform", "translate(500,300)");
+    
+
+readData("https://api.mongolab.com/api/1/databases/datafest/collections/cloud?q={%22sdate%22:%2220100106%22}&apiKey=4fdcdb51e4b075eac17ca533")
+
+var t = setTimeout('readData("https://api.mongolab.com/api/1/databases/datafest/collections/cloud?q={%22sdate%22:%2220100111%22}&apiKey=4fdcdb51e4b075eac17ca533")', 3000)
+
+
+function readData(url){
+  
+  d3.json(url, function(json) {
+      data = json;
+      console.log(data);
+      visualizeIt(data);
+    
+    });
+
+}
+
+function visualizeIt(data){
+    
+    console.log("Visualize!!!");
+
+    layout.stop().words(data[0].words).start();
 
   }
 
 
   function draw(words) {
-    d3.select("body").append("svg")
-        .attr("width", 960)
-        .attr("height", 600)
-      .append("g")
-        .attr("transform", "translate(500,300)")
-      .selectAll("text")
-        .data(words)
-      .enter().append("text")
-        .style("font-size", function(d) { return (d.size)  + "px"; })
-        .style("font-family", "Impact")
-        .style("fill", function(d, i) { return fill(i); })
-        .attr("text-anchor", "middle")
-        .attr("transform", function(d) {
-          return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-        })
-        .text(function(d) { return d.text; });
+  var text = vis.selectAll("text")
+      .data(words, function(d) { return d.text.toLowerCase(); });
+  text.transition()
+      .duration(1000)
+      .attr("transform", function(d) { return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")"; })
+      .style("font-size", function(d) { return d.size + "px"; });
+  text.enter().append("text")
+      .attr("text-anchor", "middle")
+      .attr("transform", function(d) { return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")"; })
+      .style("font-size", function(d) { return d.size + "px"; })
+      .on("click", function(d) {
+        load(d.text);
+      })
+      .style("opacity", 1e-6)
+    .transition()
+      .duration(1000)
+      .style("opacity", 1);
+  text.style("font-family", function(d) { return d.font; })
+      .style("fill", function(d) { return fill(d.text.toLowerCase()); })
+      .text(function(d) { return d.text; });
+  var exitGroup = background.append("g")
+      .attr("transform", vis.attr("transform"));
+  var exitGroupNode = exitGroup.node();
+  text.exit().each(function() {
+    exitGroupNode.appendChild(this);
+  });
+  exitGroup.transition()
+      .duration(1000)
+      .style("opacity", 1e-6)
+      .remove();
+  vis.transition()
+      .delay(1000)
+      .duration(750)
+      .attr("transform", "translate(500,300)scale(1)");
   }
 </script>
-
-
-<div id="datepicker"></div>
- 
-<script>
-  $( "#datepicker" ).datepicker();
-</script>
-
-</body>
-</html>
