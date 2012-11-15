@@ -1,6 +1,16 @@
-<script src="lib/d3/d3.js"></script>
-<script src="lib/layoutcloud/d3.layout.cloud.js"></script>
-<body>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Speech Cloud</title>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css">
+    <script src="http://code.jquery.com/jquery-1.8.2.js"></script>
+    <script src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
+    <script src="lib/d3/d3.js"></script>
+    <script src="lib/layoutcloud/d3.layout.cloud.js"></script>
+</head>
+
+<body> 
 <script>
   var fill = d3.scale.category20();
   var fontSize = d3.scale.log().range([10, 100]);
@@ -14,7 +24,9 @@
   });
 
   function visualizeIt(){
+
     console.log(fontSize);
+    
     d3.layout.cloud().size([960, 600])
         .words(data[0].words )
         .rotate(function() { return 0; })
@@ -48,3 +60,13 @@
         .text(function(d) { return d.text; });
   }
 </script>
+
+
+<div id="datepicker"></div>
+ 
+<script>
+  $( "#datepicker" ).datepicker();
+</script>
+
+</body>
+</html>
