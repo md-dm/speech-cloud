@@ -3,6 +3,7 @@
 <script src="lib/jquery/jquery-1.8.3.min.js"></script>
 
 <body>
+  <center><h2><div class="title"></div></h2></center>
   <table>
   <tr>
   <td><div id="vis"></div></td>
@@ -68,7 +69,7 @@ function readData(date){
 function visualizeIt(data){
     
     console.log("Visualize!!!");
-
+    $('div.title').text(data[0].filename);
     layout.stop().words(data[0].words).start();
 
   }
