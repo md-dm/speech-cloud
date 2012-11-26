@@ -20,19 +20,20 @@ connection = Connection('ds043027.mongolab.com', 43027)
 db = connection['datafest']
 db.authenticate("datafest", "mddm")
 cloud = db['cloud']
+cloud.drop()
 
 print cloud.count()
 
 
 totalCounter = Counter()
 
-for filename in os.listdir("Discursos Presidenciales"):
+for filename in os.listdir("Discursos-Presidenciales"):
 
-	file = codecs.open("Discursos Presidenciales/" + filename, "r", "iso-8859-1")
+	file = codecs.open("Discursos-Presidenciales/" + filename, "r", "iso-8859-1")
 	#print file.read().lower()
 
 	wordsCount = re.findall('\w+', file.read().lower(), re.UNICODE)
-	
+
 	print wordsCount 
 	#print wordsCount
 	words_cloud = {}
@@ -47,7 +48,7 @@ for filename in os.listdir("Discursos Presidenciales"):
 				  "que", "cuando", "donde", "porque", "a", "e", "i", "o", "u", "quien", "como", "quienes", "cuales", 
 				  "ellos", "ellas", "cual", "si", "no", "se", 
 				  "sé", "van", "también", "tambien", "ahi", "ahí", "allí", "alli",
-				  "sin" ]
+				  "sin", "mas", "más", "y", "sino", "cómo" ]
 
 	#dictionary = ["a", "e", "i", "o", "u", "y", "el", "en", "la", "de", "que", "con", "un", "las", "los", "ese", "es", "eso", "esa", "esos", "la", "los", "del", "ha", "esto", "para", "por", "muy", "lo", "hay", "son", "nos", "sido", "sus", "pero", "ah"]
 

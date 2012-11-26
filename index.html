@@ -1,8 +1,35 @@
 <script src="lib/d3/d3.js"></script>
 <script src="lib/layoutcloud/d3.layout.cloud.js"></script>
+<script src="lib/jquery/jquery-1.8.3.min.js"></script>
+
 <body>
-  <div id="vis"></div>
+  <table>
+  <tr>
+  <td><div id="vis"></div></td>
+  <td><div class="menu" id="menu"></div></td>
+  </tr>
+  </table>
 <script>
+
+  
+  $.ajax( { url: "https://api.mongolab.com/api/1/databases/datafest/runCommand?apiKey=4fdcdb51e4b075eac17ca533",
+          data: JSON.stringify( {"distinct": "cloud","key": "sdate","query": {}} ),
+          type: "POST",
+          contentType: "application/json",
+          success: function(msg) {
+               console.log( msg );
+               var htmlStr = "";
+               for(var i = 0; i < msg.values.length; i++){
+                  var value = msg.values[i];
+                  console.log(value);
+                  htmlStr += "<a href='javascript:readData(\"" + value + "\");''>" + value + "</a><br/>";
+               }
+               $('div.menu')
+                .html(htmlStr);
+          } } )
+
+
+
   var fill = d3.scale.category20();
   var fontSize = d3.scale.log().range([10, 100]);
   var layout = d3.layout.cloud().size([960, 600])
@@ -23,13 +50,12 @@
     .attr("transform", "translate(500,300)");
     
 
-readData("https://api.mongolab.com/api/1/databases/datafest/collections/cloud?q={%22sdate%22:%2220100106%22}&apiKey=4fdcdb51e4b075eac17ca533")
+readData("20100106")
 
-var t = setTimeout('readData("https://api.mongolab.com/api/1/databases/datafest/collections/cloud?q={%22sdate%22:%2220100111%22}&apiKey=4fdcdb51e4b075eac17ca533")', 3000)
-
-
-function readData(url){
+function readData(date){
   
+  var url = "https://api.mongolab.com/api/1/databases/datafest/collections/cloud?q={%22sdate%22:%22" + date + "%22}&apiKey=4fdcdb51e4b075eac17ca533";
+
   d3.json(url, function(json) {
       data = json;
       console.log(data);
