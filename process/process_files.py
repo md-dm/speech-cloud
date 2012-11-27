@@ -1,5 +1,5 @@
 	
-# -*- coding: latin-1 -*-  
+# -*- coding: utf-8 -*-  
 
 import os
 import re
@@ -8,7 +8,7 @@ from collections import Counter, defaultdict
 import pymongo
 from pymongo import Connection
 import datetime
-
+import unicodedata
 
 #######################################################################
 ## MAIN
@@ -34,24 +34,24 @@ for filename in os.listdir("Discursos-Presidenciales"):
 
 	wordsCount = re.findall('\w+', file.read().lower(), re.UNICODE)
 
-	print wordsCount 
 	#print wordsCount
 	words_cloud = {}
 	words_cloud["filename"] = filename
 	
 	counter = Counter(wordsCount)
-	print counter
+	#print counter
 
 	dictionary = ["a", "ante", "bajo", "cabe", "con", "contra", "de", "desde", "en", "entre", "hacia", "hasta",
 				  "para", "por", "sin", "sobre", "tras", "durante", "mediante", 
 				  "el", "la", "los", "las", "lo", "al", "del", "un", "unas", "unos", "unas", "le", 
 				  "que", "cuando", "donde", "porque", "a", "e", "i", "o", "u", "quien", "como", "quienes", "cuales", 
 				  "ellos", "ellas", "cual", "si", "no", "se", 
-				  "sé", "van", "también", "tambien", "ahi", "ahí", "allí", "alli",
-				  "sin", "mas", "más", "y", "sino", "cómo" ]
+				  "sé", "van", u'también', u'tambien', "ahi", "ahí", "allí", "alli",
+				  "sin", "mas", "y", "sino", u'cómo', u'señor', u'más', u'año']
 
 	#dictionary = ["a", "e", "i", "o", "u", "y", "el", "en", "la", "de", "que", "con", "un", "las", "los", "ese", "es", "eso", "esa", "esos", "la", "los", "del", "ha", "esto", "para", "por", "muy", "lo", "hay", "son", "nos", "sido", "sus", "pero", "ah"]
-
+	#print "Contiene la palabra más: " + str(counter[u'año'])
+	
 	for word in dictionary:
 		del counter[word]
 
@@ -70,7 +70,7 @@ for filename in os.listdir("Discursos-Presidenciales"):
 	words_cloud["date"] = datetime.datetime.strptime(filename[0:8], "%Y%m%d")
 	words_cloud["sdate"] = filename[0:8]
 
-	print words_cloud
+	#print words_cloud
 	cloud.insert(words_cloud)
 
 
@@ -91,5 +91,5 @@ for k, v in totalCounter.iteritems():
 	words_cloud["sdate"] = filename[0:8]
 
 
-print words_cloud
+#print words_cloud
 cloud.insert(words_cloud)
